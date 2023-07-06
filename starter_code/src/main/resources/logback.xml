@@ -1,0 +1,37 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+        <url>http://localhost:8000/</url>
+        <index>myIndex</index>
+        <sourcetype>mySource</sourcetype>
+        <token>eyJraWQiOiJzcGx1bmsuc2VjcmV0IiwiYWxnIjoiSFM1MTIiLCJ2ZXIiOiJ2MiIsInR0eXAiOiJzdGF0aWMifQ.eyJpc3MiOiJhbGV4YW5kZXIud2VpbWFubiBmcm9tIFdJTi0wMTc1MTcxNDY1NyIsInN1YiI6ImFsZXhhbmRlci53ZWltYW5uIiwiYXVkIjoiZnVsbCBhY2Nlc3MiLCJpZHAiOiJTcGx1bmsiLCJqdGkiOiIxZGMxZjk3NDQ1ZTgyMTNkY2Q3ODAzMGIxMTZlYjAyZThjZjU5ZDIzMDQxNjY1MjhjYTNjYzY3ZGE4ZTY4NWJjIiwiaWF0IjoxNjg4Njc2MDg0LCJleHAiOjE2ODk1NDQ3NDAsIm5iciI6MTY4ODY3NjA4NH0.1XRRZku1A6byvslaMabW3sOzDpCaSCXOpeWxOSoZBabO_kGkVdcmqw-CBR7aPj5XtKZv_WVS2UkDuZ6eOEq5bQ</token>
+        <batch_size_count>1</batch_size_count>
+        <disableCertificateValidation>true</disableCertificateValidation>
+<!--        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">-->
+<!--            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter" />-->
+<!--            <appendLineSeparator>true</appendLineSeparator>-->
+<!--        </layout>-->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%msg</pattern>
+        </layout>
+    </appender>
+
+    <logger name="STDOUT" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="splunkLog" level="debug" additivity="false">
+       <appender-ref ref="SPLUNK"/>
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="SPLUNK" />
+    </root>
+</configuration>
