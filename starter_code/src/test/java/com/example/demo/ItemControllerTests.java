@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import static com.example.demo.TestObjectGenerator.getRandomItemsList;
+import static com.example.demo.TestObjectGenerator.getTestItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +47,7 @@ class ItemControllerTests {
 
     @Test
     void getItemByIdTest() {
-        Item item = this.getTestItem();
+        Item item = getTestItem();
         when(this.repository.findById(any())).thenReturn(Optional.of(item));
 
         ResponseEntity<Item> res = controller.getItemById(1L);
@@ -70,17 +72,5 @@ class ItemControllerTests {
                 new AbstractMap.SimpleEntry(HttpStatus.NOT_FOUND, Collections.EMPTY_LIST),
                 new AbstractMap.SimpleEntry(HttpStatus.NOT_FOUND, null)
         );
-    }
-
-    private static List<Item> getRandomItemsList() {
-        return LongStream.range(1, 10).mapToObj(i -> {Item item = new Item(); item.setId(i); return item;}).collect(Collectors.toList());
-    }
-
-    private Item getTestItem() {
-        Item item = new Item();
-        item.setId(1L);
-        item.setName("test item");
-        item.setPrice(BigDecimal.valueOf(11.99));
-        return item;
     }
 }
