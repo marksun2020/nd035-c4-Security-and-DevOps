@@ -14,10 +14,6 @@
         <token>39e14d1b-dfe9-4da3-b8ef-d9944d969f63</token>
         <batch_size_count>1</batch_size_count>
         <disableCertificateValidation>true</disableCertificateValidation>
-<!--        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">-->
-<!--            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter" />-->
-<!--            <appendLineSeparator>true</appendLineSeparator>-->
-<!--        </layout>-->
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%msg</pattern>
         </layout>
@@ -30,7 +26,7 @@
        <appender-ref ref="SPLUNK"/>
     </logger>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="SPLUNK" />
     </root>
