@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.exeptions.CreateUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
-		logger.info("new user creation request");
+	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) throws CreateUserException {
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
 		Cart cart = new Cart();
@@ -55,12 +55,14 @@ public class UserController {
 
 		if (createUserRequest.getPassword().length() < 7 ||
 			!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-			logger.error("Error with user password. Cannot create user {}", createUserRequest.getUsername());
-			return ResponseEntity.badRequest().build();
+			throw new CreateUserException(
+					createUserRequest.getUsername(),
+					"createUser. Error: the password is too short or confirm pass doesn't match");
 		}
 		user.setPassword(this.bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
-
 		userRepository.save(user);
+
+		logger.info("createUser. Success: the user {} is successfully created", createUserRequest.getUsername());
 		return ResponseEntity.ok(user);
 	}
 	

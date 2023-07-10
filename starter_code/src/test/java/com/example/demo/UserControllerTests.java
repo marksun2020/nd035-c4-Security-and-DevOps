@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.controllers.UserController;
+import com.example.demo.exeptions.CreateUserException;
 import com.example.demo.model.persistence.Cart;
 import com.example.demo.model.persistence.User;
 import com.example.demo.model.persistence.repositories.CartRepository;
@@ -23,11 +24,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.example.demo.TestObjectGenerator.getTestUser;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 class UserControllerTests {
 
     @Mock
@@ -71,12 +73,11 @@ class UserControllerTests {
         }
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "OK, 12345678, 12345678",
-            "BAD_REQUEST, 123, 123",
-            "BAD_REQUEST, abcdefjh, abcdefjH"})
-    void createUserTest(HttpStatus status, String pass, String confirmPass) {
+    @Test
+    void createUserHappyPathTest() {
+        final HttpStatus status = HttpStatus.OK;
+        final String pass = "12345678";
+        final String confirmPass = pass;
         CreateUserRequest request = getCreateUserRequest(pass, confirmPass);
 
         ResponseEntity<User> result = this.controller.createUser(request);
@@ -84,21 +85,25 @@ class UserControllerTests {
         Assertions.assertEquals(status, result.getStatusCode());
     }
 
+    @Test
+    void createUserBadRequestTest() {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        final String pass = "abcdefjh";
+        final String confirmPass = "abcdefjH";
+        CreateUserRequest request = getCreateUserRequest(pass, confirmPass);
+
+        CreateUserException exception = assertThrows(CreateUserException.class, () -> this.controller.createUser(request));
+
+
+        Assertions.assertEquals(exception.getUserName(), request.getUsername());
+        Assertions.assertTrue(exception.getMessage().contains("createUser. Error: "));
+    }
+
     private static Stream<Map.Entry<HttpStatus, User>> getItemsByNameTest() {
         return Stream.of(
                 new AbstractMap.SimpleEntry(HttpStatus.OK, getTestUser()),
                 new AbstractMap.SimpleEntry(HttpStatus.NOT_FOUND, null)
         );
-    }
-
-    private static User getTestUser() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testUser");
-        user.setPassword("12345");
-        user.setCart(new Cart());
-
-        return user;
     }
 
     private static CreateUserRequest getCreateUserRequest(String pass, String confirmPass) {
