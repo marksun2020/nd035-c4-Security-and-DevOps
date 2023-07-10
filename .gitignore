@@ -1,2 +1,8 @@
+# Maven
+log/
+target/
+
+# Intellij
 .idea/
-/starter_code/target/
+*.iml
+*.iws
